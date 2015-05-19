@@ -12,18 +12,18 @@ import java.net.*;
  * @author andregeraldes
  */
 public class Cliente {
-
     /**
      * @param args the command line arguments
      * @throws java.net.SocketException
      */
     public static void main(String[] args) throws SocketException, IOException {
-        // get a datagram socket
+        
+        // Criar datagrama socket
         DatagramSocket socket = new DatagramSocket();
  
         // send request
         byte[] buf = new byte[256];
-        InetAddress address = InetAddress.getByName(args[0]);
+        InetAddress address = InetAddress.getLocalHost();
         DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);
         socket.send(packet);
      
@@ -36,6 +36,8 @@ public class Cliente {
         System.out.println("No cliente: " + received);
      
         socket.close();
+        
+        
     }
     
 }

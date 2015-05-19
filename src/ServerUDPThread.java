@@ -36,12 +36,13 @@ public class ServerUDPThread extends Thread {
                 // receive request
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
+                
  
                 // figure out response
                 String dString = null;
-                if (in == null)
-                    dString = new Date().toString();
-                else
+                //if (in == null)
+                //    dString = new Date().toString();
+                //else
                     dString = "teste";
  
                 buf = dString.getBytes();
