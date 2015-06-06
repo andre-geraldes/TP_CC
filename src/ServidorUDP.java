@@ -5,18 +5,20 @@
  */
 
 import java.io.*;
+import java.util.HashMap;
 
 /**
  *
  * @author andregeraldes
  */
 public class ServidorUDP {
-
+    
     /**
      * @param args the command line arguments
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
+        
         new ServerUDPThread().start();
     }
     

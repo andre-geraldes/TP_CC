@@ -13,7 +13,16 @@ public class Utilizador {
     private String nome;
     private String nickname;
     private String password;
+    private boolean online;
 
+    public Utilizador(int s, String n, String nick, String pw){
+        this.score = s;
+        this.nome = n;
+        this.nickname = nick;
+        this.password = pw;
+        this.online = false;
+    }
+    
     public int getScore() {
         return score;
     }
@@ -44,6 +53,14 @@ public class Utilizador {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isOnline() {
+        return this.online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
     }
     
 }
