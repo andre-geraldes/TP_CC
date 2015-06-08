@@ -10,8 +10,13 @@
  */
 import java.io.*;
 import java.net.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
  
 public class ServerUDPThread extends Thread {
  
@@ -48,7 +53,7 @@ public class ServerUDPThread extends Thread {
                 // recebido
                 String received = new String(packet.getData(), 0, packet.getLength());
                 Date date = new Date(); 
-                String data = "[" + date.getDate() + ":" + date.getMinutes() + ":" + date.getSeconds() + "]";
+                String data = "[" + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + "]";
                 System.out.println(data + "Pedido recebido -> " + received);
                 
                 // parse 
@@ -121,8 +126,74 @@ public class ServerUDPThread extends Thread {
                     }
                 }
                 else if(op.equals("MAKE_CHALLENGE")){
+                    //Criar desafio 07=nome 04=hora 05=dia
+                    String nomeD[] = received.split("07=\"");
+                    nomeD = nomeD[1].split("\"");
+                    String nd = nomeD[0];
                     
-                };       
+                    String horaD[] = received.split("05=");
+                    if(horaD[0] != received){
+                        horaD = horaD[1].split(",");
+                        String hd = horaD[0];
+                        
+                        String diaD[] = received.split("04=");
+                        diaD = diaD[1].split("\\]");
+                        String dd = diaD[0];
+                        
+                        DateFormat format = new SimpleDateFormat("yyMMdd", Locale.ENGLISH);
+                        Date diD = format.parse(dd);
+                        
+                        format = new SimpleDateFormat("HHmmss", Locale.ENGLISH);
+                        Date horD = format.parse(hd);      
+                        
+                        Date dataD = new Date();
+                        dataD.setHours(horD.getHours());
+                        dataD.setMinutes(horD.getMinutes());
+                        dataD.setSeconds(horD.getSeconds());
+                        dataD.setDate(diD.getDate());
+                        dataD.setMonth(diD.getMonth());
+                        dataD.setYear(diD.getYear());
+                        
+                        if(!this.desafios.containsKey(nd)){
+                            Desafio desafio = new Desafio(nd, dataD);
+                            this.desafios.put(nd, desafio);
+                            resposta = "PDU[ver=0,seg=0,label=" + label + ",tipo=REPLY]Lista de Campos:[00=0]";
+                        }
+                        else resposta = "PDU[ver=0,seg=0,label=" + label + ",tipo=REPLY]Lista de Campos:[255=\"Nome de desafio já existente\"]";
+                    }
+                    else {
+                        //criar em 5 min
+                        Date d = new Date();
+                        d.setMinutes(d.getMinutes() + 5);
+
+                        if(!this.desafios.containsKey(nd)){
+                            Desafio desafio = new Desafio(nd, d);
+                            this.desafios.put(nd, desafio);
+                            resposta = "PDU[ver=0,seg=0,label=" + label + ",tipo=REPLY]Lista de Campos:[00=0]";
+                        }
+                        else resposta = "PDU[ver=0,seg=0,label=" + label + ",tipo=REPLY]Lista de Campos:[255=\"Nome de desafio já existente\"]";
+                    }
+                    
+                } else if(op.equals("LIST_CHALLENGE")){
+                    resposta = "PDU[ver=0,seg=0,label=" + label + ",tipo=REPLY]Lista de Campos:[";
+                    if(!this.desafios.isEmpty()){
+                        for(Desafio desa : this.desafios.values()){
+                            resposta += "07=\"" + desa.getNome() + "\",04="+String.format("%02d", desa.getData().getYear()-100) + String.format("%02d", desa.getData().getMonth()+1) + String.format("%02d", desa.getData().getDate()) +",05="+ String.format("%02d", desa.getData().getHours()) + String.format("%02d", desa.getData().getMinutes()) + String.format("%02d", desa.getData().getSeconds())+",";        
+                        }
+                        resposta += "]";
+                    }
+                    else resposta = "PDU[ver=0,seg=0,label=" + label + ",tipo=REPLY]Lista de Campos:[255=\"Não existem desafios\"]";
+                } else if(op.equals("LIST_RANKING")){
+                    resposta = "PDU[ver=0,seg=0,label=" + label + ",tipo=REPLY]Lista de Campos:[";
+                    if(!this.utilizadores.isEmpty()){
+                        for(Utilizador u : this.utilizadores.values()){
+                            if(!u.getNome().equals("admin"))
+                                resposta += "01=\"" + u.getNome() + "\",02=\""+u.getNickname()+"\",20="+u.getScore()+",";    
+                        }
+                        resposta += "]";
+                    }
+                    else resposta = "PDU[ver=0,seg=0,label=" + label + ",tipo=REPLY]Lista de Campos:[255=\"Não existem utilizadores\"]";
+                }   
  
                 buf = resposta.getBytes();
                 // Enviar resposta ao cliente
@@ -132,10 +203,11 @@ public class ServerUDPThread extends Thread {
                 socket.send(packet);
                 
                 date = new Date();
-                data = "[" + date.getDate() + ":" + date.getMinutes() + ":" + date.getSeconds() + "]";
-                System.out.println(data + "Pedido enviado -> " + resposta);
+                data = "[" + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + "]";
+                System.out.println(data + "Pedido enviado -> " + resposta + "\n");
         } catch (IOException e) {
-            e.printStackTrace();
+            } catch (ParseException ex) {
+                Logger.getLogger(ServerUDPThread.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         socket.close();

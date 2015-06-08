@@ -22,6 +22,12 @@ public class Utilizador {
         this.password = pw;
         this.online = false;
     }
+
+    public Utilizador(int score, String nome, String nickname) {
+        this.score = score;
+        this.nome = nome;
+        this.nickname = nickname;
+    }
     
     public int getScore() {
         return score;
