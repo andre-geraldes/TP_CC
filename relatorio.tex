@@ -1,0 +1,192 @@
+
+\documentclass{report}
+\usepackage[portuges]{babel}
+\usepackage[utf8]{inputenc}
+%\usepackage[latin1]{inputenc}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{alltt}
+\usepackage{fancyvrb}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{blindtext}
+\usepackage{amsmath}
+\usepackage{microtype}
+\usepackage{xspace}
+\lstset{
+	basicstyle=\small,
+	numbers=left,
+	numberstyle=\tiny,
+	numbersep=5pt,
+	breaklines=true,
+    frame=tB,
+	mathescape=true,
+	escapeinside={(*@}{@*)}
+}
+
+\parindent=0pt
+\parskip=2pt
+
+\def\darius{\textsf{Darius}\xspace}
+\def\java{\texttt{Java}\xspace}
+
+\title{Comunicações por Computador\\3ºano\\ Trabalho Prático Nº 2\\\textbf{Desenho e implementação de um jogo distribuído na Internet}\\TP2}
+\author{André Geraldes (67673) \and Patrícia Barros (67665) \and Sandra Ferreira (67709)}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este relatório descreve todo o processo de desenvolvimento e decisões tomadas para a realização do segundo trabalho prático da Unidade Curricular de Comunicações por Computador.\\ O problema a resolver consiste na criação de um prótotipo de um jogo em tempo real que seja baseado num serviço de distribuição de contéudos, com recurso a comunicações TCP e UDP.
+ 
+\end{abstract}
+
+\tableofcontents
+
+\chapter{Introdução} \label{intro}
+
+
+\section*{Contexto}
+Este trabalho foi realizado no âmbito da Unidade Curricular de Comunicações por Computador e é inserido no contexto da matéria leccionada nas aulas acerca de conexões TCP, UDP e otimização da utilização da largura de banda.
+\section*{Motivação}
+Em aplicações distribuidas na Internet com partilha de dados a partir duma ou várias fontes, em que o número de programas clientes dos utilizadores da aplicação é muito maior que o número de servidores disponível, é normal utilizarem-se técnicas/tecnologias que permitam a poupança da largura de banda. 
+\section*{Objetivos}
+Com este trabalho pretende-se gerar um pequeno protótipo dum jogo totalmente criado pelo grupo, baseado num serviço de distribuição de conteúdos com posterior interação por parte dos utilizadores e que tente otimizar a utilização da largura de banda recorrendo a técnicas implementadas.
+\section*{Resultados}
+O trabalho final não cumpre todos os objectivos pedidos no enunciado deste trabalho, mas o grupo esforçou-se para cumprir o maior número possivel de objectivos e com isto foi possível consolidar conhecimentos sobre UDP e datagramas.
+
+%Enquadramento
+
+\section{Estrutura do Relatório} \label{estrutura}
+A elaboração deste documento teve por base um template para criação de relatórios científicos. \\
+O relatório encontra-se então estruturado da seguinte forma: no Capítulo \ref{intro} é feita uma contextualização ao assunto tratado neste trabalho, seguindo-se uma introdução onde são apresentadas as metas de aprendizagem pretendidas.\\
+Posteriormente, no Capítulo \ref{ae}, é exposto o enunciado do trabalho e a descrição do problema.\\
+Imediatamente após, no Capítulo \ref{concepcao}, é apresentada a proposta de resolução do problema e exemplos de código. São também descritas algumas classes do programa e estruturas utilizadas.\\
+No Capítulo \ref{testes} são apresentados os testes realizados e os seus resultados.\\
+Por último, no Capítulo \ref{concl}, faz-se uma análise crítica relativa quer ao desenvolvimento do projeto quer ao seu estado final e ainda é feita uma abordagem ao trabalho futuro.
+
+\chapter{Análise e Especificação} \label{ae}
+\section{Enunciado}\label{enunciado}
+Planeamento e implementação dum serviço de distribuição de conteúdos que tente otimizar a utilização da largura de banda por transmissão seletiva, fiável e com controlo de fluxo e de erros, dos conteúdos entre servidores usando unicast \textbf{TCP} (apenas para grupos de servidores que sirvam utilizadores que estão a jogar num determinado momento) e transmissão por unicast e broadcast \textbf{UDP} para todos os clientes da rede local \textbf{IP} (onde não costuma haver restrições relevantes na largura de banda). As comunicações do projeto são implementadas à custa de programação em sockets \textbf{TCP} e \textbf{UDP} e não deve utilizar nenhuma tecnologia baseada em http ou implementados interfaces baseados em serviços web.
+
+\section{Descrição do Problema}\label{descricao}
+Como descrito na secção anterior o desafio que nos foi proposto consiste na criação de uma aplicação numa linguagem de programação à nossa escolha que seja constituida por um servidor e vários clientes que jogam os jogos lançados pelo servidor. \\
+Posto isto tivemos então de, primeiramente, pensar e decidir uma linguagem para a implementação e resolução do problema, e escolhemos \textbf{Java}. De seguida foi necessário decidir algumas classes e possíveis alternativas e por fim criar uma interface que permita ao jogador interagir com o servidor de uma maneira mais simples.
+
+\chapter{Concepção/desenho da Resolução}\label{concepcao}
+
+\section{Escolha da linguagem}\label{linguagem}
+O principal princípio que seguimos aquando de decidir a linguagem a utilizar foi a simplicidade desta, visto que estavamos habituados a ela e nos permitiria programar sockets \textbf{UDP} e \textbf{TCP} sem problemas e aplicá-la de forma a que os passos seguintes do trabalho não fossem excessivamente complicados.
+
+\section{Servidor}\label{servidor}
+O servidor terá que ser uma entidade sempre activa à espera de pedidos dos seus clientes, instalado numa porta fixa para que os clientes possam contactá-lo. Para tal usamos as seguintes instruções: 
+\begin{lstlisting}[language=Java]
+protected DatagramSocket socket = null;
+...
+socket = new DatagramSocket(4445);
+\end{lstlisting}
+A porta utilizada será a 4445. O servidor fica em \textit{loop} a receber pedidos dos seus clientes e é feito da seguinte forma:
+\begin{lstlisting}[language=Java]
+byte[] buf = new byte[256];
+ 
+DatagramPacket packet = new DatagramPacket(buf, buf.length);
+socket.receive(packet);
+String received = new String(packet.getData(), 0, packet.getLength());
+\end{lstlisting}
+Aqui definimos um datagrama para guardar o datagrama vindo do cliente. \\ Após a receção do datagrama é colocado numa \textit{String} e é feito o parsing desta, para poder responder de forma eficaz ao pedido recebido.
+Exemplo de parsing de uma parte do PDU:
+\begin{lstlisting}[language=Java]
+String[] lb;
+lb = received.split("label=");
+lb = lb[1].split((","));
+int label = Integer.parseInt(lb[0]);
+\end{lstlisting}
+Neste passo é guardado na variável \textit{label} do tipo \textit{int}, o valor da label que vinha no datagrama enviado pelo cliente. Após isto é usada uma função criada por nós para saber o tipo de PDU recebido (pode ser do tipo LOGIN, LOGOUT, etc.).
+
+\begin{lstlisting}[language=Java]
+public String splitPDU(String pdu){
+    String[] nova;
+    nova = pdu.split("tipo=");
+    nova = nova[1].split("]");
+        
+    return nova[0];
+}
+...
+String op = splitPDU(received);
+if(op.equals("LOGIN")){ 
+    //executar accoes de login
+\end{lstlisting}
+Esta função faz o parse do PDU e retorna apenas o campo após \textbf{tipo=} que poderá ser por exemplo LOGIN. Após isso o servidor entra num \textit{loop} de \textit{if} e \textit{else} para tratar cada tipo de pedido e são realizadas instruções por parte do servidor para responder ao pedido recebido.
+
+\begin{lstlisting}[language=Java]
+resposta = "PDU[ver=0,seg=0,label=" + label + ",tipo=REPLY]Lista de Campos:[255=\"Utilizador ja online\"]"; 
+\end{lstlisting}
+Exemplo de resposta quando o utilizador que tenta fazer login já se encontra logado noutro cliente. Após a saída do tratamento do pedido e já com a resposta na variável \textit{resposta} do tipo \textit{String} é feito o envio para o cliente.
+\begin{lstlisting}[language=Java]
+buf = resposta.getBytes();
+
+InetAddress address = packet.getAddress();
+int port = packet.getPort(); 
+packet = new DatagramPacket(buf, buf.length, address, port);
+socket.send(packet); 
+...
+socket.close();
+\end{lstlisting}
+
+Variavéis de classe do servidor.
+\begin{lstlisting}[language=Java]
+private HashMap<String,Utilizador> utilizadores;
+private HashMap<Integer,Pergunta> perguntas;
+private HashMap<String,Desafio> desafios;
+private String userOnline;
+private String musicDir;
+private String imagDir;
+private int nrPerguntas;
+protected DatagramSocket socket = null;
+\end{lstlisting}
+É nestas variavéis que ficam guardados os utilizadores registados no sistema, todas as perguntas existentes e os desafios criados pelos jogadores.
+Na inicialização do servidor temos
+\begin{lstlisting}[language=Java]
+this.utilizadores = new HashMap<>();
+this.desafios = new HashMap<>();
+this.perguntas = new HashMap<>();
+Utilizador ut = new Utilizador(0, "admin", "admin", "admin");
+this.getUtilizadores().put("admin", ut);
+this.lerPerguntas();
+\end{lstlisting}
+Que é onde são inicializadas as estruturas para guardar os dados, criação de um utilizador que é o \textit{admin} e a leitura das perguntas existentes de um ficheiro \textit{perguntas.txt}.
+
+\section{Cliente}\label{cliente}
+Com o servidor criado a receber pedidos e tratar destes, é necessário um cliente para fazer as trocas de pedidos e respostas. Para isto utilizamos uma interface gráfica baseada em \textbf{Swing}. A maneira como o cliente manda pedidos e recebe respostas é idêntica à do servidor como mostramos a seguir.
+\begin{lstlisting}[language=Java]
+DatagramSocket socket = new DatagramSocket()) {
+byte[] buf = new byte[256]; <- Usado no envio do pedido
+byte[] rec = new byte[256]; <- Usado na rececao do pedido
+InetAddress address = InetAddress.getLocalHost();
+
+String pedido = "PDU[ver=0,seg=0,label=" + label++ + ",tipo=LIST_RANKING]Lista de campos[]"; 
+
+buf = pedido.getBytes();
+DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);
+socket.send(packet);
+
+packet = new DatagramPacket(rec, rec.length);
+socket.receive(packet);
+String received = new String(packet.getData(), 0, packet.getLength());
+\end{lstlisting}
+Para os outros casos é idêntico, só alterando algumas coisas e adaptando para cada tipo de pedido.
+
+\section{Resultados}\label{resultados}
+Nesta secção vamos apresentar algumas imagens dos resultados obtidos.
+\begin{center}
+\includegraphics[scale=0.7]{}
+\label{fig1}
+\end{center}
+
+\chapter{Conclusão} \label{concl}
+Este trabalho é uma aplicação que contém um servidor e um ou mais clientes que comunicam entre si por sockets UDP, não foram implementadas comunicações por TCP nem multiservidores.
+\\Para nós foi uma boa oportunidade para aprender mais sobre trocas de mensagens por sockets UDP e tratamento das mesmas.
+\\O grupo não conseguiu implementar algumas funcionalidades pedidas como por exemplo jogar um desafio.
+\end{document} 

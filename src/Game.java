@@ -434,13 +434,13 @@ public class Game extends javax.swing.JFrame {
         // TODO add your handling code here:
         if(!online.equals("")){
             try (
-                // Criar datagrama socket
+                // Criar datagrama
                 DatagramSocket socket = new DatagramSocket()) {
                 byte[] buf = new byte[256];
                 byte[] rec = new byte[256];
                 InetAddress address = InetAddress.getLocalHost();
 
-                // PDU de LOGOUT
+                // PDU de listar rankings
                 String pedido = "PDU[ver=0,seg=0,label=" + label++ + ",tipo=LIST_RANKING]Lista de campos[]"; 
 
                 buf = pedido.getBytes();
