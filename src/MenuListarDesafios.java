@@ -1,8 +1,17 @@
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -44,10 +53,12 @@ public class MenuListarDesafios extends javax.swing.JFrame {
         hora = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setPreferredSize(new java.awt.Dimension(567, 398));
+        jPanel1.setLayout(null);
 
         lista.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -56,17 +67,29 @@ public class MenuListarDesafios extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(lista);
 
-        jLabel1.setFont(new java.awt.Font("Lucida Grande", 0, 16)); // NOI18N
+        jPanel1.add(jScrollPane1);
+        jScrollPane1.setBounds(38, 60, 123, 268);
+
+        jLabel1.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Hora:");
+        jPanel1.add(jLabel1);
+        jLabel1.setBounds(179, 261, 47, 22);
 
+        hora.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        hora.setForeground(new java.awt.Color(255, 255, 255));
         hora.setText("hh:mm:ss ");
+        jPanel1.add(hora);
+        hora.setBounds(240, 260, 245, 22);
 
-        jButton1.setText("Jogar");
+        jButton1.setText("Aceitar desafio");
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButton1MouseClicked(evt);
             }
         });
+        jPanel1.add(jButton1);
+        jButton1.setBounds(169, 299, 130, 29);
 
         jButton2.setText("Voltar");
         jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -74,42 +97,13 @@ public class MenuListarDesafios extends javax.swing.JFrame {
                 jButton2MouseClicked(evt);
             }
         });
+        jPanel1.add(jButton2);
+        jButton2.setBounds(300, 300, 95, 29);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(38, 38, 38)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(hora, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(88, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(60, 60, 60)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(hora))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1)
-                            .addComponent(jButton2)))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(70, Short.MAX_VALUE))
-        );
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/pulse.jpg"))); // NOI18N
+        jLabel2.setText("jLabel2");
+        jPanel1.add(jLabel2);
+        jLabel2.setBounds(0, -2, 570, 400);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -127,6 +121,7 @@ public class MenuListarDesafios extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void listaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaMouseClicked
@@ -151,7 +146,46 @@ public class MenuListarDesafios extends javax.swing.JFrame {
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         // TODO add your handling code here:
-        // Entrar no jogo e esperar
+        try (
+                // Criar datagrama socket
+                DatagramSocket socket = new DatagramSocket()) {
+                byte[] buf = new byte[256];
+                byte[] rec = new byte[256];
+                InetAddress address = InetAddress.getLocalHost();
+
+                // Pedido para aceitar desafio selecionado
+                String pedido = "PDU[ver=0,seg=0,label=" + Game.label++ + ",tipo=ACCEPT_CHALLENGE]Lista de campos[07=\""+lista.getSelectedValue().toString() +"\"]"; 
+
+                buf = pedido.getBytes();
+                DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);
+                socket.send(packet);
+
+                // Receber resposta
+                packet = new DatagramPacket(rec, rec.length);
+                socket.receive(packet);
+
+                // Apresentar resposta
+                String received = new String(packet.getData(), 0, packet.getLength());
+                
+                String[] r;
+                r = received.split(":\\[");
+                r = r[1].split(("="));
+                String tipo = r[0];
+                if(tipo.equals("00")){               
+                    JOptionPane.showMessageDialog(null, "Desafio aceite");
+                    this.dispose();
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "Erro ao aceitar desafio");
+                }
+      
+            } catch (SocketException ex) {
+                Logger.getLogger(MenuLogin.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UnknownHostException ex) {
+                Logger.getLogger(MenuLogin.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(MenuLogin.class.getName()).log(Level.SEVERE, null, ex);
+            }
     }//GEN-LAST:event_jButton1MouseClicked
 
     /**
@@ -194,6 +228,7 @@ public class MenuListarDesafios extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JList lista;

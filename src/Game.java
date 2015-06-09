@@ -35,6 +35,7 @@ public class Game extends javax.swing.JFrame {
     public static int label;
     public static TreeMap<Date, Desafio> desafios;
     public static ArrayList<Utilizador> utilizadores;
+    public static ArrayList<Pergunta> perguntas;
 
     /**
      * Creates new form Game
@@ -60,6 +61,8 @@ public class Game extends javax.swing.JFrame {
         bemvindo = new javax.swing.JLabel();
         resultado = new javax.swing.JLabel();
         sair = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         inicio = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
@@ -71,21 +74,31 @@ public class Game extends javax.swing.JFrame {
         logout = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(300, 300));
-        setSize(new java.awt.Dimension(300, 300));
+        setMaximumSize(new java.awt.Dimension(440, 300));
+        setPreferredSize(new java.awt.Dimension(440, 300));
+        setResizable(false);
+        setSize(new java.awt.Dimension(440, 300));
 
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel1.setMinimumSize(new java.awt.Dimension(753, 489));
-        jPanel1.setSize(new java.awt.Dimension(753, 489));
+        jPanel1.setPreferredSize(new java.awt.Dimension(440, 300));
+        jPanel1.setSize(new java.awt.Dimension(440, 300));
         jPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jPanel1MouseClicked(evt);
             }
         });
+        jPanel1.setLayout(null);
 
         bemvindo.setFont(new java.awt.Font("Lucida Grande", 2, 24)); // NOI18N
+        bemvindo.setForeground(new java.awt.Color(255, 255, 255));
         bemvindo.setText(" ");
+        jPanel1.add(bemvindo);
+        bemvindo.setBounds(21, 59, 440, 30);
 
         resultado.setFont(new java.awt.Font("Lucida Grande", 2, 24)); // NOI18N
+        jPanel1.add(resultado);
+        resultado.setBounds(0, 0, 0, 0);
 
         sair.setText("Sair");
         sair.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -98,30 +111,17 @@ public class Game extends javax.swing.JFrame {
                 sairActionPerformed(evt);
             }
         });
+        jPanel1.add(sair);
+        sair.setBounds(300, 190, 90, 40);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(91, 91, 91)
-                        .addComponent(sair, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addComponent(bemvindo)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(58, 58, 58)
-                .addComponent(bemvindo)
-                .addGap(115, 115, 115)
-                .addComponent(sair)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/pulse.jpg"))); // NOI18N
+        jLabel1.setText(" ");
+        jPanel1.add(jLabel1);
+        jLabel1.setBounds(-70, 0, 580, 300);
+
+        jLabel2.setText("jLabel2");
+        jPanel1.add(jLabel2);
+        jLabel2.setBounds(90, 290, 45, 16);
 
         inicio.setText("Inicio");
 
@@ -208,7 +208,7 @@ public class Game extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 507, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -216,6 +216,7 @@ public class Game extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
@@ -456,9 +457,9 @@ public class Game extends javax.swing.JFrame {
                 String nomeD[] = received.split("01=\"");
                 String aux;
                 String auxV[];
-
+                
+                this.utilizadores.clear();
                 for(int i = 1; i < nomeD.length; i++) { 
-                    
                     aux = nomeD[i];
                     auxV = aux.split("\"");
                     String nd = auxV[0];
@@ -472,14 +473,19 @@ public class Game extends javax.swing.JFrame {
                     String p = pontos[0];
 
                     Utilizador u = new Utilizador(Integer.parseInt(p), nd, nu);
-                    //Guardar ordenado no arraylist
+                    //Guardar ordenado no arraylist                   
                     int size = this.utilizadores.size();
                     if(this.utilizadores.size() == 0) this.utilizadores.add(u);
-                    for(int j = 0; j < size; j++){
+                    int inseriu = 0;
+                    for(int j = 0; (j < size) && (inseriu != 1); j++){
                         if(this.utilizadores.get(j).getScore() >= u.getScore()){
                             this.utilizadores.add(j+1,u);
+                            inseriu = 1;
                         }
-                        else this.utilizadores.add(u);
+                        else {
+                            this.utilizadores.add(u);
+                            inseriu = 1;
+                        }
                     }
                 }
                 
@@ -491,6 +497,7 @@ public class Game extends javax.swing.JFrame {
                 Logger.getLogger(MenuLogin.class.getName()).log(Level.SEVERE, null, ex);
             }
             new MenuRanking().setVisible(true);
+            this.utilizadores.clear();
         }
     }//GEN-LAST:event_rankingMouseClicked
 
@@ -540,6 +547,8 @@ public class Game extends javax.swing.JFrame {
     private javax.swing.JMenuItem Criar_Desafio;
     public static javax.swing.JLabel bemvindo;
     private javax.swing.JMenu inicio;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;

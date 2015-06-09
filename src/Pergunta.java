@@ -92,4 +92,9 @@ public class Pergunta {
     public void setCerta(int certa) {
         this.certa = certa;
     } 
+    
+        @Override
+    public String toString() {
+        return "Pergunta{" + "musica=" + musica + ", imagem=" + imagem + ", pergunta=" + pergunta + ", resposta1=" + resposta1 + ", resposta2=" + resposta2 + ", resposta3=" + resposta3 + ", certa=" + certa + '}';
+    }
 }

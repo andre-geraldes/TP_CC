@@ -1,7 +1,7 @@
-music_DIR=musica
-images_DIR=imagens
+music_DIR=src/musica
+images_DIR=src/imagens
 questions_#=10
-0000001.mp3,000001.jpg,"Quem canta esta canção?","Robert Smith","Bono Vox","Ninguém, é uma música instrumental",3
+0000001.mp3,000001.jpg,"Quem canta esta canção?","Robert Smith","Bono Vox","Ninguém é uma música instrumental",3
 0000002.mp3,000002.jpg,"Relacione esta canção com uma das seguintes palavras:","Microsoft","Adobe","Linux",2
 0000003.mp3,000003.jpg,"Qual destas palavras não aparece no poema deste fado?","Lamento","Tormento","Momento",3
 0000004.mp3,000004.jpg,"Qual destes países não tem relação com o cantor desta canção?","Portugal","Irão","Inglaterra",3

@@ -1,4 +1,5 @@
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -16,11 +17,13 @@ public class Desafio {
     private String nome;
     private Date data;
     private HashMap<Integer,Pergunta> perguntasDesafio;
+    private ArrayList<String> jogadores;
 
     public Desafio(String nome, Date data) {
         this.nome = nome;
         this.data = data;
-        this.perguntasDesafio = new HashMap<>();
+        this.perguntasDesafio = new HashMap<>(10);
+        this.jogadores = new ArrayList<>();
     }
 
     public String getNome() {
@@ -45,6 +48,14 @@ public class Desafio {
 
     public void setPerguntasDesafio(HashMap<Integer,Pergunta> perguntasDesafio) {
         this.perguntasDesafio = perguntasDesafio;
+    }
+
+    public ArrayList<String> getJogadores() {
+        return this.jogadores;
+    }
+
+    public void setJogadores(ArrayList<String> jogadores) {
+        this.jogadores = jogadores;
     }
     
     

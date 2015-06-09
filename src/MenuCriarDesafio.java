@@ -48,11 +48,24 @@ public class MenuCriarDesafio extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         criarButton = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(400, 300));
+        setModalExclusionType(null);
+        setPreferredSize(new java.awt.Dimension(400, 300));
+        setResizable(false);
+
+        jPanel1.setSize(new java.awt.Dimension(400, 300));
+        jPanel1.setLayout(null);
 
         jLabel1.setFont(new java.awt.Font("Lucida Grande", 0, 16)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Nome do desafio:");
+        jPanel1.add(jLabel1);
+        jLabel1.setBounds(20, 100, 138, 20);
+        jPanel1.add(nomeDesafio);
+        nomeDesafio.setBounds(170, 100, 171, 28);
 
         JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(horas, "HH:mm:ss dd-MM-yyyy");
         horas.setEditor(timeEditor);
@@ -67,9 +80,14 @@ public class MenuCriarDesafio extends javax.swing.JFrame {
                 horasMouseClicked(evt);
             }
         });
+        jPanel1.add(horas);
+        horas.setBounds(170, 130, 171, 28);
 
         jLabel2.setFont(new java.awt.Font("Lucida Grande", 0, 16)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Data do desafio:");
+        jPanel1.add(jLabel2);
+        jLabel2.setBounds(30, 130, 128, 20);
 
         criarButton.setText("Criar desafio");
         criarButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -77,6 +95,8 @@ public class MenuCriarDesafio extends javax.swing.JFrame {
                 criarButtonMouseClicked(evt);
             }
         });
+        jPanel1.add(criarButton);
+        criarButton.setBounds(170, 170, 171, 29);
 
         jButton2.setText("Voltar");
         jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -84,41 +104,13 @@ public class MenuCriarDesafio extends javax.swing.JFrame {
                 jButton2MouseClicked(evt);
             }
         });
+        jPanel1.add(jButton2);
+        jButton2.setBounds(170, 200, 171, 29);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(94, 94, 94)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(criarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(nomeDesafio)
-                    .addComponent(horas, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(158, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(121, 121, 121)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(nomeDesafio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(horas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(criarButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2)
-                .addContainerGap(145, Short.MAX_VALUE))
-        );
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/pulse.jpg"))); // NOI18N
+        jLabel3.setText("jLabel3");
+        jPanel1.add(jLabel3);
+        jLabel3.setBounds(0, 0, 470, 300);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -132,6 +124,7 @@ public class MenuCriarDesafio extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void criarButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_criarButtonMouseClicked
@@ -186,7 +179,8 @@ public class MenuCriarDesafio extends javax.swing.JFrame {
                 r = r[1].split(("="));
                 String tipo = r[0];
                 if(tipo.equals("00")){               
-                    JOptionPane.showMessageDialog(null, "Desafio criado");             
+                    JOptionPane.showMessageDialog(null, "Desafio criado"); 
+                    this.dispose();
                 }
                 else {
                     JOptionPane.showMessageDialog(null, "Desafio não criado");
@@ -257,6 +251,7 @@ public class MenuCriarDesafio extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField nomeDesafio;
     // End of variables declaration//GEN-END:variables
